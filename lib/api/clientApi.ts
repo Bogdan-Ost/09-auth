@@ -58,15 +58,15 @@ export const fetchNoteById = async (id: NoteId): Promise<Note> => {
   return data;
 };
 
-export const signUp = async (data: FormData): Promise<AuthResponse> => {
+export const signUp = async (data: FormData): Promise<User> => {
   const payload = Object.fromEntries(data);
-  const response = await api.post<AuthResponse>("/auth/register", payload);
+  const response = await api.post<User>("/auth/register", payload);
   return response.data;
 };
 
-export const signIn = async (data: FormData): Promise<AuthResponse> => {
+export const signIn = async (data: FormData): Promise<User> => {
   const payload = Object.fromEntries(data);
-  const response = await api.post<AuthResponse>("/auth/login", payload);
+  const response = await api.post<User>("/auth/login", payload);
   return response.data;
 };
 

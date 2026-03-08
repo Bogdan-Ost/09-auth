@@ -22,8 +22,8 @@ export default function SignInPage() {
 
     try {
       const response = await signIn(formData);
-      if (response && response.user) {
-        setUser(response.user);
+      if (response && response.username) {
+        setUser(response);
         router.push("/profile");
       } else {
         setError("Помилка: дані користувача не отримані від сервера");

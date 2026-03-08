@@ -13,11 +13,12 @@ export default function NoteForm() {
   const { draft, setDraft, clearDraft } = useNoteStore();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: typeof draft) => createNote({ noteData: values }),
+    mutationFn: (values: typeof draft) => createNote(values),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       clearDraft();
-      router.push("/notes");
+      router.push("/notes/filter/all");
     },
   });
 
