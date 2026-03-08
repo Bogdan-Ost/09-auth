@@ -1,16 +1,27 @@
-"use client";
-
-import { useAuthStore } from "@/lib/store/authStore";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
+import { getMe } from "@/lib/api/serverApi";
 import css from "./ProfilePage.module.css";
 
-export default function ProfilePage() {
-  const user = useAuthStore((state) => state.user);
+export const metadata: Metadata = {
+  title: "Профіль користувача | My App",
+  description: "Перегляд інформації профілю",
+};
+
+export default async function ProfilePage() {
+  const user = await getMe();
 
   if (!user) {
-    return <main className={css.mainContent}>Loading profile...</main>;
+    return (
+      <main className={css.mainContent}>
+        Користувача не знайдено або ви не авторизовані.
+      </main>
+    );
   }
+
+  const fallbackAvatar = `https://ui-avatars.com{encodeURIComponent(user.username)}&background=random`;
+  const avatarUrl = user.avatar || fallbackAvatar;
 
   return (
     <main className={css.mainContent}>
@@ -24,18 +35,23 @@ export default function ProfilePage() {
 
         <div className={css.avatarWrapper}>
           <Image
-            src={user.avatar || `https://ui-avatars.com{user.username}`}
-            alt="User Avatar"
+            src={avatarUrl}
+            alt={`${user.username} avatar`}
             width={120}
             height={120}
             className={css.avatar}
+            priority
             unoptimized
           />
         </div>
 
         <div className={css.profileInfo}>
-          <p>Username: {user.username}</p>
-          <p>Email: {user.email}</p>
+          <p>
+            <strong>Username:</strong> {user.username}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
         </div>
       </div>
     </main>

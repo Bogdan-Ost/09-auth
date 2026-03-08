@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
-import { checkSession } from "@/lib/api/clientApi";
+import { checkSession, getMe } from "@/lib/api/clientApi";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,8 +18,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const user = await checkSession();
-        if (user) setUser(user);
+        const sessionResponse = await checkSession();
+
+        if (sessionResponse) {
+          const userData = await getMe();
+          setUser(userData);
+        } else {
+          clearIsAuthenticated();
+        }
       } catch (error) {
         clearIsAuthenticated();
       } finally {
@@ -28,7 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     initAuth();
-  }, [setUser, clearIsAuthenticated]);
+  }, [setUser, clearIsAuthenticated, pathname]);
 
   const isPublicPage = pathname === "/sign-up" || pathname === "/sign-in";
 

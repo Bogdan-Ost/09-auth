@@ -1,6 +1,7 @@
-import api from "./api"; // Ваш інстанс з withCredentials: true
+import api from "./api";
 import type { Note } from "@/types/note";
 import { User } from "@/types/user";
+import axios from "axios";
 
 export type NoteId = Note["id"];
 
@@ -25,6 +26,13 @@ interface CreateNoteData {
   title: string;
   content: string | null;
   tag: string;
+}
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+export interface SignUpCredentials extends AuthCredentials {
+  username: string;
 }
 
 export const fetchNotes = async (
@@ -58,20 +66,19 @@ export const fetchNoteById = async (id: NoteId): Promise<Note> => {
   return data;
 };
 
-export const signUp = async (data: FormData): Promise<User> => {
-  const payload = Object.fromEntries(data);
-  const response = await api.post<User>("/auth/register", payload);
+export const signUp = async (credentials: SignUpCredentials): Promise<User> => {
+  const response = await api.post<User>("/auth/register", credentials);
   return response.data;
 };
 
-export const signIn = async (data: FormData): Promise<User> => {
-  const payload = Object.fromEntries(data);
-  const response = await api.post<User>("/auth/login", payload);
+export const signIn = async (credentials: AuthCredentials): Promise<User> => {
+  const response = await api.post<User>("/auth/login", credentials);
   return response.data;
 };
 
-export const logout = async (): Promise<void> => {
-  await api.post("/auth/logout");
+export const signOut = async () => {
+  const response = await axios.post("/api/auth/logout");
+  return response.data;
 };
 
 export const checkSession = async (): Promise<User> => {

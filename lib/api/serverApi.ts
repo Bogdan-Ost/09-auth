@@ -1,10 +1,14 @@
 import { cookies } from "next/headers";
 import api from "./api";
 import { User } from "@/types/user";
+import axios, { AxiosResponse } from "axios";
 
 const getAuthConfig = async () => {
   const cookieStore = await cookies();
-  const cookieString = cookieStore.toString();
+  const cookieString = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
 
   return {
     headers: {
@@ -32,12 +36,12 @@ export const getMe = async (): Promise<User> => {
   return response.data;
 };
 
-export const checkSession = async (): Promise<User | null> => {
+export const checkSession = async (): Promise<AxiosResponse<User> | null> => {
   try {
     const config = await getAuthConfig();
-    const response = await api.get<User | null>("/auth/session", config);
-    return response.data;
-  } catch {
+    const response = await api.get<User>("/auth/session", config);
+    return response;
+  } catch (error) {
     return null;
   }
 };

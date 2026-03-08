@@ -2,32 +2,45 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/api/clientApi";
+import { signUp, SignUpCredentials } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignUpPage.module.css";
 import axios from "axios";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event,
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+    setIsLoading(true);
 
     const formData = new FormData(event.currentTarget);
+    const credentials = Object.fromEntries(
+      formData,
+    ) as unknown as SignUpCredentials;
 
     try {
-      await signUp(formData);
-      router.push("/profile");
-    } catch (err) {
+      const user = await signUp(credentials);
+
+      if (user) {
+        setUser(user);
+
+        router.push("/profile");
+      }
+    } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message || "Помилка сервера";
-        setError(message);
+        setError(err.response?.data?.message || "Помилка при реєстрації");
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError("Сталася неочікувана помилка");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -36,6 +49,18 @@ export default function SignUpPage() {
       <h1 className={css.formTitle}>Sign up</h1>
       <form className={css.form} onSubmit={handleSubmit}>
         <div className={css.formGroup}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            className={css.input}
+            required
+            autoComplete="username"
+          />
+        </div>
+
+        <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
             id="email"
@@ -43,6 +68,7 @@ export default function SignUpPage() {
             name="email"
             className={css.input}
             required
+            autoComplete="email"
           />
         </div>
 
@@ -54,12 +80,17 @@ export default function SignUpPage() {
             name="password"
             className={css.input}
             required
+            autoComplete="new-password"
           />
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Register
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? "Registering..." : "Register"}
           </button>
         </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/api/clientApi";
+import { AuthCredentials, signIn } from "@/lib/api/clientApi";
 import axios from "axios";
 import css from "./SignInPage.module.css";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -15,26 +15,19 @@ export default function SignInPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
     setIsLoading(true);
-
     const formData = new FormData(event.currentTarget);
+    const credentials = Object.fromEntries(
+      formData,
+    ) as unknown as AuthCredentials;
 
     try {
-      const response = await signIn(formData);
-      if (response && response.username) {
+      const response = await signIn(credentials);
+      if (response) {
         setUser(response);
         router.push("/profile");
-      } else {
-        setError("Помилка: дані користувача не отримані від сервера");
       }
     } catch (err) {
-      console.error("Login Error:", err);
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Invalid email or password");
-      } else {
-        setError("An unexpected error occurred");
-      }
     } finally {
       setIsLoading(false);
     }
