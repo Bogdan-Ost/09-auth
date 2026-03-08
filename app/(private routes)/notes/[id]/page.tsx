@@ -15,15 +15,15 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-async function getNote(id: string) {
-  const res = await fetch(`https://api.example.com/notes/${id}`);
-  if (!res.ok) return null;
-  return res.json();
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const id = (await params).id;
-  const note = await getNote(id);
+  const { id } = await params;
+
+  let note = null;
+  try {
+    note = await fetchNoteById(id);
+  } catch (error) {
+    console.error("Metadata fetch error:", error);
+  }
 
   const title = note ? `${note.title} | NoteHub` : "Нотатка не знайдена";
   const description = note ? note.content.substring(0, 160) : "Деталі нотатки";

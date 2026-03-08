@@ -36,12 +36,8 @@ export const getMe = async (): Promise<User> => {
   return response.data;
 };
 
-export const checkSession = async (): Promise<AxiosResponse<User> | null> => {
-  try {
-    const config = await getAuthConfig();
-    const response = await api.get<User>("/auth/session", config);
-    return response;
-  } catch (error) {
-    return null;
-  }
+export const checkSession = async (): Promise<AxiosResponse<User>> => {
+  const config = await getAuthConfig();
+  const response = await api.get<User>("/auth/session", config);
+  return response;
 };

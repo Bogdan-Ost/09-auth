@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     );
   }
 
-  const fallbackAvatar = `https://ui-avatars.com{encodeURIComponent(user.username)}&background=random`;
+  const fallbackAvatar = `https://ui-avatars.com{encodeURIComponent(${user.username})}`;
   const avatarUrl = user.avatar || fallbackAvatar;
 
   return (

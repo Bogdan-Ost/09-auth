@@ -76,8 +76,9 @@ export const signIn = async (credentials: AuthCredentials): Promise<User> => {
   return response.data;
 };
 
-export const signOut = async () => {
-  const response = await axios.post("/api/auth/logout");
+export const signOut = async (): Promise<{ message: string }> => {
+  const response = await api.post("/auth/logout");
+
   return response.data;
 };
 
