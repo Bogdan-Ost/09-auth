@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     );
   }
 
-  const fallbackAvatar = `https://ui-avatars.com{encodeURIComponent(${user.username})}`;
+  const fallbackAvatar = `https://ui-avatars.com{encodeURIComponent(user.username)}&background=random`;
   const avatarUrl = user.avatar || fallbackAvatar;
 
   return (
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
         <div className={css.avatarWrapper}>
           <Image
             src={avatarUrl}
-            alt={`${user.username} avatar`}
+            alt={`Аватар користувача ${user.username}`}
             width={120}
             height={120}
             className={css.avatar}
