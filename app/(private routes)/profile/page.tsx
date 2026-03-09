@@ -31,7 +31,7 @@ export default async function ProfilePage() {
 
         <div className={css.avatarWrapper}>
           <Image
-            src={`https://ui-avatars.com{encodeURIComponent(user.username)}&background=random`}
+            src={user.avatar}
             alt={`Аватар користувача ${user.username}`}
             width={120}
             height={120}
