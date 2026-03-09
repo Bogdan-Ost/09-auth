@@ -16,7 +16,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
         return;
       }
-
+      if (!document.cookie) {
+        clearIsAuthenticated();
+        setIsLoading(false);
+        return;
+      }
       try {
         const sessionResponse = await checkSession();
 
